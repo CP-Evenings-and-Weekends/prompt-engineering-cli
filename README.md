@@ -12,7 +12,7 @@ python3 -m venv venv && source venv/bin/activate
 python prompt_tool.py
 ```
 
-`call_llm()` is intentionally a stub that just prints the engineered prompt.  Wednesday's lesson (`week16/day3` — AI API Integration) is where you swap it out for a real API call.
+`call_llm()` is intentionally a stub that just prints the engineered prompt.  Thursday's lesson (`week16/day3` — AI API Integration) is where you swap it out for a real API call.
 
 ## Requirements
 
@@ -53,12 +53,12 @@ Pick **one** of your prompts and write a second, deliberately bad version of it.
 - Which of the lesson's techniques actually moved the needle for *your* use case, and which felt like overhead?
 - The lesson's `build_explain_prompt` takes `skill_level` as a free-form string and pastes it into the prompt unchecked.  What could go wrong?  How would you validate it?
 - Where would a few-shot example come from in a production setting?  Hard-coded?  Pulled from a database?  Generated?
-- When you switch from this stub to a real API call on Wednesday, what edge cases will you need to handle that don't exist today (timeouts, rate limits, partial JSON…)?
+- When you switch from this stub to a real API call on Thursday, what edge cases will you need to handle that don't exist today (timeouts, rate limits, partial JSON…)?
 
 ## Stretch
 
 - Read the use case + inputs from a YAML/JSON config file instead of `input(...)`.  Easier to iterate on prompts that way.
-- Add a `--dry-run` flag that just prints the prompt (current behavior) and a `--live` flag that you'll wire up to a real API on Wednesday.
+- Add a `--dry-run` flag that just prints the prompt (current behavior) and a `--live` flag that you'll wire up to a real API on Thursday.
 - Write 2–3 sample inputs per use case and pin them as fixtures.  When you change a prompt, re-run all fixtures and diff the outputs.
 - Add **bias-mitigation** instructions to one of your system prompts (the lesson's "LLM Limitations" section mentions this).  Did the output change?
 

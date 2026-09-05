@@ -5,7 +5,7 @@ are wired up. Your job is to add at least one more — pick something you'd
 actually use day to day and apply the techniques from the lesson.
 
 call_llm() is intentionally a no-op stub that just prints the engineered
-prompt. On Wednesday (week16/day3) you'll replace it with a real API call.
+prompt. On Thursday (week16/day3) you'll replace it with a real API call.
 """
 
 

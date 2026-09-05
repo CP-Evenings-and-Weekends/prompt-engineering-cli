@@ -61,5 +61,6 @@ Pick **one** of your prompts and write a second, deliberately bad version of it.
 - Add a `--dry-run` flag that just prints the prompt (current behavior) and a `--live` flag that you'll wire up to a real API on Thursday.
 - Write 2–3 sample inputs per use case and pin them as fixtures.  When you change a prompt, re-run all fixtures and diff the outputs.
 - Add **bias-mitigation** instructions to one of your system prompts (the lesson's "LLM Limitations" section mentions this).  Did the output change?
+- Once `call_llm` is real (Thursday): make one use case return **strict JSON** — but via the API's schema-constrained output (`messages.parse` / a JSON Schema in the request), not by begging "return ONLY valid JSON" in the prompt.  Compare how often each approach gives you unparseable output.
 
 > Stuck? Have a code error? Use the ["4 Before Me"](https://docs.google.com/document/d/1nseOs5oabYBKNHfwJZNAR7GlU0zkZxNagsw63AD7XV0/edit) debugging checklist to help you solve it!

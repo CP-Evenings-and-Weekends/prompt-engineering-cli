@@ -128,15 +128,71 @@ Please:
 # Add your own build_<something>_prompt(...) function here.
 
 
+def build_api_designer_prompt(resource, fields, operations):
+    """Build a prompt for designing REST API endpoints."""
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are an API designer specializing in RESTful APIs. "
+                "Design clear and conventional endpoints using standard HTTP methods."
+            )
+        },
+        {
+            "role": "user",
+            "content": f"""Design REST API endpoints for the resource below.
+
+Use this exact format for each endpoint:
+
+Method:
+Path:
+Purpose:
+
+Example:
+
+Resource: Student
+Fields: name, email
+Operations: CRUD
+
+Output:
+Method: GET
+Path: /api/students/
+Purpose: Return all students
+
+Method: POST
+Path: /api/students/
+Purpose: Create a new student
+
+### RESOURCE START ###
+Resource: {resource}
+Fields: {fields}
+Operations: {operations}
+### RESOURCE END ###
+
+Only return the endpoint specification."""
+        }
+    ]
+    return messages
+
+def build_bad_api_prompt(resource):
+    """A deliberately poorly written prompt for comparison."""
+    messages = [
+        {
+            "role": "user",
+            "content": f"Make API endpoints for {resource}."
+        }
+    ]
+    return messages
+
 def main():
     print("=== Prompt Engineering CLI Tool ===\n")
     print("Choose a use case:")
     print("1. Code Review")
     print("2. Concept Explanation")
     print("3. Debug Helper")
-    # Add a 4th option here once you've written your own use case.
+    print("4. API Endpoint Designer")
 
-    choice = input("\nEnter your choice (1-3): ").strip()
+    choice = input("\nEnter your choice (1-4): ").strip()
 
     if choice == "1":
         print("\nPaste your code (type 'END' on a new line when done):")
@@ -170,9 +226,17 @@ def main():
         messages = build_debug_prompt(error, code, tried)
         call_llm(messages)
 
+    elif choice == "4":
+        resource = input("\nWhat resource are you designing an API for? ").strip()
+        fields = input("What fields does the resource have? ").strip()
+        operations = input("What operations do you need (e.g. CRUD)? ").strip()
+        messages = build_api_designer_prompt(resource, fields, operations)
+        call_llm(messages)
+
     else:
         print("Invalid choice.")
 
+    
 
 if __name__ == "__main__":
     main()

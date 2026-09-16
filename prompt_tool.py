@@ -36,7 +36,7 @@ def build_code_review_prompt(code_snippet):
                 "Be constructive and specific. For each issue you find, explain "
                 "why it is a problem and provide a corrected code snippet. "
                 "Organize your review into sections: Bugs, Style, Performance, Security."
-            )
+            ),
         },
         {
             "role": "user",
@@ -54,8 +54,8 @@ If the code looks good in a category, say "No issues found."
 {code_snippet}
 ###CODE END###
 
-Return your review organized by category."""
-        }
+Return your review organized by category.""",
+        },
     ]
     return messages
 
@@ -70,7 +70,7 @@ def build_explain_prompt(concept, skill_level):
                 "Your students know Python, JavaScript, and Django. "
                 "Use analogies and practical examples. Never assume knowledge beyond "
                 "what is specified."
-            )
+            ),
         },
         {
             "role": "user",
@@ -83,8 +83,8 @@ Instructions:
 - If comfort is 3, give a clear definition with a practical code example
 - If comfort is 4-5, focus on nuances, edge cases, and advanced usage
 
-Keep your explanation under 300 words. End with a "Try it yourself" mini-challenge."""
-        }
+Keep your explanation under 300 words. End with a "Try it yourself" mini-challenge.""",
+        },
     ]
     return messages
 
@@ -97,7 +97,7 @@ def build_debug_prompt(error_message, code_context, what_i_tried):
             "content": (
                 "You are a debugging assistant. Think through problems step by step. "
                 "Always explain the root cause, not just the fix."
-            )
+            ),
         },
         {
             "role": "user",
@@ -119,13 +119,69 @@ Please:
 2. Identify the most likely root cause
 3. Explain WHY this causes the error
 4. Provide the fix with corrected code
-5. Suggest how to prevent this type of error in the future"""
-        }
+5. Suggest how to prevent this type of error in the future""",
+        },
     ]
     return messages
 
 
-# Add your own build_<something>_prompt(...) function here.
+def build_commit_message_prompt(diff):
+    """Build a prompt for generating a Conventional Commit message from a diff."""
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a senior software engineer writing git commit messages "
+                "following the Conventional Commits specification. "
+                "Every commit message must use the format: type(scope): subject\n"
+                "Valid types are: feat, fix, refactor, docs, style, test, chore, perf.\n"
+                "The subject line must be 50 characters or fewer, written in imperative "
+                "mood (e.g. 'add' not 'added'), and must not end with a period.\n"
+                "Include a body only if the diff touches more than one file or "
+                "introduces a non-trivial behavior change. If a body is included, "
+                "separate it from the subject with one blank line."
+            ),
+        },
+        {
+            "role": "user",
+            "content": f"""Here are examples of well-formatted commit messages for diffs:
+
+Example 1:
+Diff:
+- def get_user(id):
+-     return db.query(id)
++ def get_user(user_id):
++     return db.query(user_id)
+Commit message:
+refactor(users): rename id param to user_id for clarity
+
+Example 2:
+Diff:
++ def validate_email(email):
++     return "@" in email and "." in email
+Commit message:
+feat(validation): add basic email format check
+
+Example 3:
+Diff (touches auth.py and tests/test_auth.py):
+- if password == stored_password:
++ if bcrypt.checkpw(password, stored_password):
+Commit message:
+fix(auth): use bcrypt for password comparison
+
+Replaces plaintext comparison with bcrypt.checkpw to prevent
+timing attacks on password verification.
+
+Now write a commit message for this diff:
+
+###DIFF START###
+{diff}
+###DIFF END###
+
+Return only the commit message. Do not include explanations or commentary.""",
+        },
+    ]
+    return messages
 
 
 def main():
@@ -134,9 +190,9 @@ def main():
     print("1. Code Review")
     print("2. Concept Explanation")
     print("3. Debug Helper")
-    # Add a 4th option here once you've written your own use case.
+    print("4. Commit Message Writer")
 
-    choice = input("\nEnter your choice (1-3): ").strip()
+    choice = input("\nEnter your choice (1-4): ").strip()
 
     if choice == "1":
         print("\nPaste your code (type 'END' on a new line when done):")
@@ -168,6 +224,18 @@ def main():
         code = "\n".join(lines)
         tried = input("What have you already tried? ").strip()
         messages = build_debug_prompt(error, code, tried)
+        call_llm(messages)
+
+    elif choice == "4":
+        print("\nPaste your diff (type 'END' on a new line when done):")
+        lines = []
+        while True:
+            line = input()
+            if line.strip() == "END":
+                break
+            lines.append(line)
+        diff = "\n".join(lines)
+        messages = build_commit_message_prompt(diff)
         call_llm(messages)
 
     else:

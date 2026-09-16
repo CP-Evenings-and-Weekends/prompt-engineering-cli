@@ -125,8 +125,45 @@ Please:
     return messages
 
 
-# Add your own build_<something>_prompt(...) function here.
 
+# Add your own build_<something>_prompt(...) function here.
+# - System prompt that sets the role and constraints
+# - Few-shot prompting (input → output examples)
+# - Specificity (word counts, exact field names, output shape)
+def resume_rewrite_prompt(personal_resume, job_listing):
+    '''Build a prompt to tailor a resume to better match a job listing'''
+    messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You are a career advisor whose job is to review and edit client resumes."
+                    "You tailer client resumes to best match job listings by taking relevnt experience and matching the listing provided"
+                    "Never make up skills and experinces that where not provided in resume." #constraint
+                )
+            },
+            {
+                "role": "user",
+                "content": f"""A jod listing and resume will be provided. Use that to tailor the resume provided to best match the job listing.
+                    Job listing example:
+                    Resume example:
+                    Tailored example:
+                    
+    ###Resume Start###      
+    {resume_text}
+    ###Resume End###
+    
+    ###Job Listing Start###
+    {job_listing_text}
+    ###Job Listing End###
+    
+    1. Take top 5 keywords in job listing that can be used with current experience.
+    2. Rewrite the resume bullet points to emphasize relevant experience.
+    3. Keep bullet points to one sentence. 
+    4. Do not alter the layout of the origional resume.
+    5. Provide a brief summary of the bullet points that where changed"""
+            }
+    ]
+    return messages
 
 def main():
     print("=== Prompt Engineering CLI Tool ===\n")
@@ -134,7 +171,7 @@ def main():
     print("1. Code Review")
     print("2. Concept Explanation")
     print("3. Debug Helper")
-    # Add a 4th option here once you've written your own use case.
+    print("4. Resume Rewrite")# Add a 4th option here once you've written your own use case.
 
     choice = input("\nEnter your choice (1-3): ").strip()
 
@@ -169,6 +206,8 @@ def main():
         tried = input("What have you already tried? ").strip()
         messages = build_debug_prompt(error, code, tried)
         call_llm(messages)
+        
+    #elif choice == "4":
 
     else:
         print("Invalid choice.")
@@ -176,3 +215,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Difference between these delimiters: *** vs ###
